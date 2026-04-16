@@ -3,6 +3,7 @@ package com.employeemanagement.servlet;
 import com.employeemanagement.data.EmployeeStore;
 import com.employeemanagement.data.ReviewStore;
 import com.employeemanagement.data.ProjectStore;
+import com.employeemanagement.model.Employee;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -82,6 +83,35 @@ public class ActionServlet extends HttpServlet {
                 int projectId = Integer.parseInt(request.getParameter("projectId"));
                 String newStatus = request.getParameter("status");
                 ProjectStore.updateProjectStatus(projectId, newStatus);
+            } catch (Exception e) {}
+            
+        } else if ("addProject".equals(actionType)) {
+            activeTab = "2";
+            try {
+                String name = request.getParameter("projectName");
+                String manager = request.getParameter("managerName");
+                double cost = Double.parseDouble(request.getParameter("cost"));
+                ProjectStore.addProject(name, manager, cost);
+            } catch (Exception e) {}
+            
+        } else if ("assignPTO".equals(actionType)) {
+            activeTab = "8";
+            try {
+                int id = Integer.parseInt(request.getParameter("employeeId"));
+                Employee emp = EmployeeStore.getEmployeeById(id);
+                if (emp != null) {
+                    emp.setEndDate("On Leave");
+                }
+            } catch (Exception e) {}
+            
+        } else if ("returnPTO".equals(actionType)) {
+            activeTab = "8";
+            try {
+                int id = Integer.parseInt(request.getParameter("employeeId"));
+                Employee emp = EmployeeStore.getEmployeeById(id);
+                if (emp != null) {
+                    emp.setEndDate("Active");
+                }
             } catch (Exception e) {}
         }
 

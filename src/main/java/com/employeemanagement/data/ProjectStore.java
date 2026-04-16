@@ -7,6 +7,7 @@ import java.util.List;
 
 public class ProjectStore {
     private static final List<Project> projects = new ArrayList<>();
+    private static int nextProjectId = 107;
 
     static {
         projects.add(new Project(101, "Titanium Infrastructure Upgrade", "Diana Prince", "Active", 1250000.00));
@@ -28,5 +29,9 @@ public class ProjectStore {
                 break;
             }
         }
+    }
+
+    public static void addProject(String name, String manager, double cost) {
+        projects.add(new Project(nextProjectId++, name, manager, "Planning", cost));
     }
 }

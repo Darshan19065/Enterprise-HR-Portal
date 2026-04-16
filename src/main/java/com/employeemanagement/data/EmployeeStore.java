@@ -68,6 +68,7 @@ public class EmployeeStore {
     }
 
     public static void logDailyTime(int id, int hours) {
+        if (hours < 0 || hours > 24) return; // Prevent negative blocks or physically impossible hours
         Employee emp = getEmployeeById(id);
         if (emp != null) {
             emp.setWeeklyHours(emp.getWeeklyHours() + hours);

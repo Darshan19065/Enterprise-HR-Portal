@@ -44,6 +44,9 @@
                 <button class="tab-link" onclick="openTab(event, 'tab-lookup')" id="nav-7">
                     <span class="color-dot" style="background:var(--c-slate);"></span> Employee Lookup
                 </button>
+                <button class="tab-link" onclick="openTab(event, 'tab-pto')" id="nav-8">
+                    <span class="color-dot" style="background:#06b6d4;"></span> PTO & Leave
+                </button>
             </nav>
 
             <div style="flex:1;"></div>
@@ -62,13 +65,11 @@
                     <h1>Executive Analytics</h1>
                     <p>Live macro-organizational metrics driven by Java and rendered via Chart.js.</p>
                 </div>
-                
                 <div class="metrics-grid" style="margin-bottom: 25px;">
                     <div class="metric-card"><h3>Gross Revenue</h3><div class="metric-number highlight-gold">${totalRevenue}</div></div>
                     <div class="metric-card"><h3>Active Employees</h3><div class="metric-number highlight-blue">${activeCount}</div></div>
                     <div class="metric-card"><h3>Total Logged Weekly Hours</h3><div class="metric-number highlight-green">${totalHours}h</div></div>
                 </div>
-
                 <div class="card-container" style="display:flex; justify-content:center; align-items:center; flex-direction:column;">
                     <h2>Departmental Overview</h2>
                     <div style="max-width: 400px; width: 100%; margin-top:20px;">
@@ -77,64 +78,56 @@
                 </div>
             </section>
 
-            <!-- TAB 2: PROJECTS KANBAN WITH INTERACTIVE BUTTONS -->
+            <!-- TAB 2: PROJECTS -->
             <section id="tab-projects" class="tab-content" style="display: none;">
                 <div class="header-card theme-gold" style="margin-bottom:20px;">
                     <h2>Active Projects Overview</h2>
                     <p class="subtitle">Categorized view of all internal engagements. Move projects dynamically!</p>
                 </div>
                 
+                <div class="card-container theme-gold" style="margin-bottom:25px;">
+                    <h2>Initialize New Project</h2>
+                    <form action="action" method="POST" class="standard-form">
+                        <input type="hidden" name="actionType" value="addProject">
+                        <div class="form-row">
+                            <div class="form-group"><label>Project Name</label><input type="text" name="projectName" required></div>
+                            <div class="form-group"><label>Assign Manager</label>
+                            <select name="managerName" required><option value="">-- Select --</option><c:forEach var="emp" items="${employees}"><option value="${emp.name}">${emp.name}</option></c:forEach></select></div>
+                            <div class="form-group"><label>Assigned Budget ($)</label><input type="number" name="cost" step="1000" min="0" required></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="background:var(--c-gold);">Start Project</button>
+                    </form>
+                </div>
+
                 <div class="kanban-board">
-                    <!-- Column: Planning -->
                     <div class="kanban-col">
                         <div class="k-header">Planning</div>
                         <c:forEach var="proj" items="${projects}">
                             <c:if test="${proj.status == 'Planning'}">
                                 <div class="k-card">
-                                    <div class="k-title">${proj.projectName}</div>
-                                    <div class="k-manager">${proj.assignedManager}</div>
-                                    <div class="k-budget">$${proj.revenueCollection}</div>
-                                    <form action="action" method="POST" style="margin-top:10px;">
-                                        <input type="hidden" name="actionType" value="updateProject">
-                                        <input type="hidden" name="projectId" value="${proj.projectId}">
-                                        <input type="hidden" name="status" value="Active">
-                                        <button type="submit" class="btn btn-sm btn-teal" style="width:100%;">Push to Active ➡</button>
-                                    </form>
+                                    <div class="k-title">${proj.projectName}</div><div class="k-manager">${proj.assignedManager}</div><div class="k-budget">$${proj.revenueCollection}</div>
+                                    <form action="action" method="POST" style="margin-top:10px;"><input type="hidden" name="actionType" value="updateProject"><input type="hidden" name="projectId" value="${proj.projectId}"><input type="hidden" name="status" value="Active"><button type="submit" class="btn btn-sm btn-teal" style="width:100%;">Push to Active ➡</button></form>
                                 </div>
                             </c:if>
                         </c:forEach>
                     </div>
-
-                    <!-- Column: Active -->
                     <div class="kanban-col">
                         <div class="k-header">Active</div>
                         <c:forEach var="proj" items="${projects}">
                             <c:if test="${proj.status == 'Active'}">
                                 <div class="k-card" style="border-left: 4px solid var(--c-teal);">
-                                    <div class="k-title">${proj.projectName}</div>
-                                    <div class="k-manager">${proj.assignedManager}</div>
-                                    <div class="k-budget">$${proj.revenueCollection}</div>
-                                    <form action="action" method="POST" style="margin-top:10px;">
-                                        <input type="hidden" name="actionType" value="updateProject">
-                                        <input type="hidden" name="projectId" value="${proj.projectId}">
-                                        <input type="hidden" name="status" value="Completed">
-                                        <button type="submit" class="btn btn-sm btn-primary" style="width:100%;">Mark Completed ✓</button>
-                                    </form>
+                                    <div class="k-title">${proj.projectName}</div><div class="k-manager">${proj.assignedManager}</div><div class="k-budget">$${proj.revenueCollection}</div>
+                                    <form action="action" method="POST" style="margin-top:10px;"><input type="hidden" name="actionType" value="updateProject"><input type="hidden" name="projectId" value="${proj.projectId}"><input type="hidden" name="status" value="Completed"><button type="submit" class="btn btn-sm btn-primary" style="width:100%;">Mark Completed ✓</button></form>
                                 </div>
                             </c:if>
                         </c:forEach>
                     </div>
-
-                    <!-- Column: Completed -->
                     <div class="kanban-col">
                         <div class="k-header" style="background:var(--c-green); color:#fff;">Completed</div>
                         <c:forEach var="proj" items="${projects}">
                             <c:if test="${proj.status == 'Completed'}">
                                 <div class="k-card" style="border-left: 4px solid var(--c-green); opacity: 0.8;">
-                                    <div class="k-title" style="text-decoration: line-through;">${proj.projectName}</div>
-                                    <div class="k-manager">${proj.assignedManager}</div>
-                                    <div class="k-budget">$${proj.revenueCollection}</div>
-                                    <span style="font-size:11px; color:var(--text-muted); display:block; margin-top:10px;">Archived.</span>
+                                    <div class="k-title" style="text-decoration: line-through;">${proj.projectName}</div><div class="k-manager">${proj.assignedManager}</div><div class="k-budget">$${proj.revenueCollection}</div>
                                 </div>
                             </c:if>
                         </c:forEach>
@@ -146,7 +139,7 @@
             <section id="tab-roster" class="tab-content" style="display: none;">
                 <div class="card-container theme-green">
                     <h2>Staff Directory</h2>
-                    <p class="subtitle" style="font-size:12px;">Click a Header attribute (e.g. Employee or Weekly Hrs) to instantly sort!</p>
+                    <p class="subtitle" style="font-size:12px;">Click a Header attribute (e.g. Employee or Weekly Hrs) to instantly sort! "On Leave" employees are grayed out.</p>
                     <div class="table-scroll">
                         <table id="rosterTable">
                             <thead>
@@ -160,20 +153,18 @@
                             </thead>
                             <tbody>
                                 <c:forEach var="emp" items="${employees}">
-                                    <tr>
+                                    <tr style="${emp.endDate == 'On Leave' ? 'opacity:0.4; filter:grayscale(100%);' : ''}">
                                         <td data-sort="${emp.name}">
                                             <div class="emp-wrapper">
-                                                <div class="emp-name">${emp.name} <span class="emp-id">#${emp.id}</span></div>
+                                                <div class="emp-name">${emp.name} <span class="emp-id">#${emp.id}</span>
+                                                <c:if test="${emp.endDate == 'On Leave'}"><span style="color:#ef4444; font-size:11px;">[ON PTO]</span></c:if>
+                                                </div>
                                                 <div class="emp-subtext">${emp.role}</div>
                                             </div>
                                         </td>
                                         <td data-sort="${emp.department}"><span class="badge dept-badge">${emp.department}</span></td>
                                         <td data-sort="${emp.weeklyHours}"><span class="hours-text">${emp.weeklyHours}h</span> <div class="emp-subtext">in ${emp.daysWorkedThisWeek} days</div></td>
-                                        <td data-sort="${emp.dailyAverage}">
-                                            <span class="avg-badge">
-                                                <fmt:formatNumber value="${emp.dailyAverage}" pattern="#0.0"/>h
-                                            </span>
-                                        </td>
+                                        <td data-sort="${emp.dailyAverage}"><span class="avg-badge"><fmt:formatNumber value="${emp.dailyAverage}" pattern="#0.0"/>h</span></td>
                                         <td>
                                             <div style="display:flex; gap:8px;">
                                                 <button class="btn btn-primary btn-sm" onclick="openEditModal(${emp.id}, '${emp.name}', '${emp.email}', '${emp.role}', '${emp.department}', '${emp.joiningDate}', '${emp.endDate}')">Edit</button>
@@ -202,12 +193,7 @@
                         <div class="form-row">
                             <div class="form-group"><label>Role</label><input type="text" name="role" required></div>
                             <div class="form-group"><label>Department</label>
-                            <select name="department" required>
-                                <option value="">-- Select Department --</option>
-                                <option value="Project Analysis">Project Analysis</option><option value="HR Overview">HR Overview</option>
-                                <option value="Creative Design">Creative Design</option><option value="Corporate Operations">Corporate Operations</option>
-                                <option value="Financial Review">Financial Review</option><option value="Client Support">Client Support</option>
-                            </select></div>
+                            <select name="department" required><option value="">-- Select Department --</option><option value="Project Analysis">Project Analysis</option><option value="HR Overview">HR Overview</option><option value="Creative Design">Creative Design</option><option value="Corporate Operations">Corporate Operations</option><option value="Financial Review">Financial Review</option><option value="Client Support">Client Support</option></select></div>
                         </div>
                         <div class="form-row"><div class="form-group"><label>Joining Date</label><input type="date" name="joiningDate" required></div></div>
                         <button type="submit" class="btn btn-purple">Register to System</button>
@@ -222,7 +208,7 @@
                         <h2>Leave Corporate Review</h2>
                         <form action="action" method="POST" class="standard-form">
                             <input type="hidden" name="actionType" value="addReview">
-                            <div class="form-group"><label>Name (Optional)</label><input type="text" name="name"></div>
+                            <div class="form-group"><label>Name</label><input type="text" name="name"></div>
                             <div class="form-group"><label>Rating (1-5)</label><input type="number" name="rating" min="1" max="5" value="5" required></div>
                             <div class="form-group"><label>Feedback</label><textarea name="feedback" rows="4" required></textarea></div>
                             <button type="submit" class="btn btn-rose" style="width:100%;">Submit Feedback</button>
@@ -238,11 +224,8 @@
                         <form action="action" method="POST" class="standard-form">
                             <input type="hidden" name="actionType" value="logTime">
                             <div class="form-group" style="margin-bottom:15px;"><label>Employee</label>
-                            <select name="employeeId" required style="padding:10px; border-radius:6px; background:var(--surface); color:var(--text-main); border:1px solid var(--border);">
-                            <option value="">-- Choose Staff Member --</option>
-                            <c:forEach var="emp" items="${employees}"><option value="${emp.id}">${emp.name}</option></c:forEach>
-                            </select></div>
-                            <div class="form-group" style="margin-bottom:20px;"><label>Today's Logged Hours</label><input type="number" name="todaysHours" value="8" required></div>
+                            <select name="employeeId" required style="padding:10px; border-radius:6px; background:var(--surface); color:var(--text-main); border:1px solid var(--border);"><option value="">-- Choose Staff Member --</option><c:forEach var="emp" items="${employees}"><option value="${emp.id}">${emp.name}</option></c:forEach></select></div>
+                            <div class="form-group" style="margin-bottom:20px;"><label>Today's Logged Hours</label><input type="number" name="todaysHours" value="8" min="0" max="24" required></div>
                             <button type="submit" class="btn btn-teal" style="width:100%;">Submit Time Punch</button>
                         </form>
                     </div>
@@ -254,7 +237,7 @@
                 <div class="card-container theme-slate" style="max-width:800px; margin:0 auto;">
                     <h2>Employee Lookup Console</h2>
                     <div class="search-bar" style="display:flex; gap:10px; margin-bottom: 30px;">
-                        <input type="text" id="searchInput" placeholder="Search Alice, or ID..." style="flex:1; padding:12px; border-radius:6px; border:2px solid var(--border); background:var(--surface); color:var(--text-main);">
+                        <input type="text" id="searchInput" placeholder="Search Alice..." style="flex:1; padding:12px; border-radius:6px; border:2px solid var(--border); background:var(--surface); color:var(--text-main);">
                         <button onclick="performSearch()" class="btn btn-primary">Retrieve Profile</button>
                     </div>
                     <div id="profile-container" style="display:none; animation: fadeIn 0.4s;">
@@ -272,6 +255,37 @@
                 </div>
             </section>
 
+            <!-- TAB 8: PTO / LEAVE (Cyan) -->
+            <section id="tab-pto" class="tab-content" style="display: none;">
+                <div class="card-container form-centric" style="border-top: 4px solid #06b6d4;">
+                    <h2>Schedule Paid Time Off (PTO)</h2>
+                    <p class="subtitle">Assigning vacation instantly grays out the employee on the Staff Directory.</p>
+                    <form action="action" method="POST" class="standard-form">
+                        <input type="hidden" name="actionType" value="assignPTO">
+                        <div class="form-group" style="margin-bottom:20px;">
+                            <label>Employee taking Leave</label>
+                            <select name="employeeId" required style="padding:10px; border-radius:6px; background:var(--surface); color:var(--text-main); border:1px solid var(--border);">
+                                <option value="">-- Authorize PTO for Staff --</option>
+                                <c:forEach var="emp" items="${employees}"><option value="${emp.id}">${emp.name}</option></c:forEach>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn" style="background:#06b6d4; width:100%; color:#fff;">Approve Vacation Time</button>
+                    </form>
+                    <hr style="border:0; border-top:1px solid var(--border); margin:25px 0;">
+                    <form action="action" method="POST" class="standard-form">
+                        <input type="hidden" name="actionType" value="returnPTO">
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <label>Employee Returning from leave</label>
+                            <select name="employeeId" required style="padding:10px; border-radius:6px; background:var(--surface); color:var(--text-main); border:1px solid var(--border);">
+                                <option value="">-- Recall Staff to Active Duty --</option>
+                                <c:forEach var="emp" items="${employees}"><option value="${emp.id}">${emp.name}</option></c:forEach>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-outline" style="width:100%; border-color:#06b6d4; color:#06b6d4;">Return to Active Status</button>
+                    </form>
+                </div>
+            </section>
+
         </main>
     </div>
 
@@ -285,7 +299,7 @@
                 <div class="form-row"><div class="form-group"><label>Name</label><input type="text" name="name" id="edit-name" required></div><div class="form-group"><label>Email</label><input type="text" name="email" id="edit-email" required></div></div>
                 <div class="form-row"><div class="form-group"><label>Role</label><input type="text" name="role" id="edit-role" required></div>
                 <div class="form-group"><label>Deprt</label><select name="department" id="edit-dept" required><option value="Project Analysis">Project Analysis</option><option value="HR Overview">HR Overview</option><option value="Creative Design">Creative Design</option><option value="Corporate Operations">Corporate Operations</option><option value="Financial Review">Financial Review</option><option value="Client Support">Client Support</option></select></div></div>
-                <div class="form-row"><div class="form-group"><label>Join Date</label><input type="text" name="joiningDate" id="edit-join" required></div><div class="form-group"><label>End Date</label><input type="text" name="endDate" id="edit-end" required></div></div>
+                <div class="form-row"><div class="form-group"><label>Join Date</label><input type="text" name="joiningDate" id="edit-join" required></div><div class="form-group"><label>End Date / PTO</label><input type="text" name="endDate" id="edit-end" required></div></div>
                 <div class="form-actions" style="margin-top: 20px;"><button type="submit" class="btn btn-primary" style="width:100%;">Commit Edit</button></div>
             </form></div></div>
 
@@ -297,26 +311,18 @@
             document.documentElement.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
         }
         
-        // Sorting Logic dynamically switching ASC/DESC
-        let sortDirections = [true, true, true, true]; // flags for columns 0, 1, 2, 3
+        let sortDirections = [true, true, true, true];
         function sortTable(n) {
             var table = document.getElementById("rosterTable");
             var rows = Array.from(table.rows).slice(1);
             var isAsc = sortDirections[n];
-            
             rows.sort(function(a, b) {
                 var x = a.cells[n].getAttribute("data-sort");
                 var y = b.cells[n].getAttribute("data-sort");
-                
-                // If it's pure numbers (column 2 for hrs or 3 for avg) parse it, else compare string
-                if (n === 2 || n === 3) {
-                    return isAsc ? (parseFloat(x) - parseFloat(y)) : (parseFloat(y) - parseFloat(x));
-                } else {
-                    return isAsc ? x.localeCompare(y) : y.localeCompare(x);
-                }
+                if (n === 2 || n === 3) return isAsc ? (parseFloat(x) - parseFloat(y)) : (parseFloat(y) - parseFloat(x));
+                else return isAsc ? x.localeCompare(y) : y.localeCompare(x);
             });
-            sortDirections[n] = !isAsc; // toggle
-            rows.forEach(function(row) { table.tBodies[0].appendChild(row); });
+            sortDirections[n] = !isAsc; rows.forEach(r => table.tBodies[0].appendChild(r));
         }
 
         window.onload = function() {
@@ -326,7 +332,7 @@
                 options: { cutout: '70%'}
             });
             var t = new URLSearchParams(window.location.search).get('tab');
-            if(t) document.getElementById({"1":"nav-1", "2":"nav-2", "3":"nav-3", "4":"nav-4", "5":"nav-5", "6":"nav-6", "7":"nav-7"}[t]).click();
+            if(t) document.getElementById({"1":"nav-1", "2":"nav-2", "3":"nav-3", "4":"nav-4", "5":"nav-5", "6":"nav-6", "7":"nav-7", "8":"nav-8"}[t]).click();
         };
 
         function openTab(evt, tid) {
@@ -343,7 +349,7 @@
                 document.getElementById('p-avatar-char').innerText = f.name.charAt(0);
                 document.getElementById('p-name').innerText = f.name; document.getElementById('p-role').innerText = f.role;
                 document.getElementById('p-id').innerText = f.id; document.getElementById('p-email').innerText = f.email;
-                document.getElementById('p-dept').innerText = f.dept; document.getElementById('p-status').innerText = f.end === "Active" ? "Active" : "Terminated";
+                document.getElementById('p-dept').innerText = f.dept; document.getElementById('p-status').innerText = f.end === "On Leave" ? "On PTO" : (f.end === "Active" ? "Active" : "Terminated");
                 document.getElementById('profile-container').style.display = "block";
             } else { document.getElementById('profile-container').style.display = "none"; Swal.fire('No match','','warning'); }
         }
